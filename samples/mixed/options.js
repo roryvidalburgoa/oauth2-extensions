@@ -15,6 +15,12 @@
     client_secret: '8ecfc23e0dba1ce1a295fbabc01fa71db4b80261',
   });
 
+  var hubspot = new OAuth2('hubspot', {
+    client_id: 'f8a6d478-5fca-4ec6-868c-347e3963af7e',
+    client_secret: '628a2462-c4b0-490f-9d97-e11b7711dae4',
+    api_scope: 'contacts'
+  });
+
   function authorize(providerName) {
     var provider = window[providerName];
     provider.authorize(checkAuthorized);
@@ -22,7 +28,7 @@
 
   function clearAuthorized() {
     console.log('clear');
-    ['google', 'facebook', 'github'].forEach(function(providerName) {
+    ['google', 'facebook', 'github', 'hubspot'].forEach(function(providerName) {
       var provider = window[providerName];
       provider.clearAccessToken();
     });
@@ -31,7 +37,7 @@
 
   function checkAuthorized() {
     console.log('checkAuthorized');
-    ['google', 'facebook', 'github'].forEach(function(providerName) {
+    ['google', 'facebook', 'github', 'hubspot'].forEach(function(providerName) {
       var provider = window[providerName];
       var button = document.querySelector('#' + providerName);
       if (provider.hasAccessToken()) {
@@ -46,6 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('button#google').addEventListener('click', function() { authorize('google'); });
   document.querySelector('button#github').addEventListener('click', function() { authorize('github'); });
   document.querySelector('button#facebook').addEventListener('click', function() { authorize('facebook'); });
+  document.querySelector('button#hubspot').addEventListener('click', function() { authorize('hubspot'); });
+
   document.querySelector('button#clear').addEventListener('click', function() { clearAuthorized() });
 
   checkAuthorized();
