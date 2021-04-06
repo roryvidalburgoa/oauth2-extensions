@@ -103,9 +103,11 @@ OAuth2.prototype.openAuthorizationCodePopup = function (callback) {
   // it later.
   window["oauth-callback"] = callback;
 
+  var that = this;
+
   // Create a new tab with the OAuth 2.0 prompt
   chrome.tabs.create(
-    { url: this.adapter.authorizationCodeURL(this.getConfig()) },
+    { url: that.adapter.authorizationCodeURL(this.getConfig()) },
     function (tab) {
       // 1. user grants permission for the application to access the OAuth 2.0
       // endpoint
@@ -117,8 +119,29 @@ OAuth2.prototype.openAuthorizationCodePopup = function (callback) {
       // (if there are multiple OAuth 2.0 adapters)
       // 6. Finally, the flow is finished and client code can call
       // myAuth.getAccessToken() to get a valid access token.
+      that.setCurrentTab(tab);
     }
   );
+};
+
+OAuth2.prototype.currentTab = null;
+OAuth2.prototype.setCurrentTab = function (tab) {
+  console.log("setCurrentTab: %d", tab.id);
+  this.currentTab = tab;
+  localStorage.setItem("oauthTabId", tab.id);
+};
+OAuth2.prototype.closeCurrentTab = function () {
+  if (this.currentTab) {
+    this.currentTab.close();
+  } else {
+    var tabId = localStorage.getItem("oauthTabId");
+    if (tabId) {
+      console.log("closeCurrentTab %d", +tabId);
+      chrome.tabs.remove(+tabId, function () {
+        console.log("tab removed " + tabId);
+      });
+    }
+  }
 };
 
 OAuth2.prototype.getGCAccessAndRefreshTokens = function (
@@ -268,8 +291,9 @@ OAuth2.prototype.finishAuth = function () {
 
     // Once we get here, close the current tab and we're good to go.
     // The following works around bug: crbug.com/84201
-    window.open("", "_self", "");
-    window.close();
+    // window.open("", "_self", "");
+    // window.close();
+    that.closeCurrentTab();
   }
 
   try {
