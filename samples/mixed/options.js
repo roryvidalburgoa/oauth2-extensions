@@ -17,7 +17,7 @@
 
   var hubspot = new OAuth2('hubspot', {
     client_id: 'f8a6d478-5fca-4ec6-868c-347e3963af7e',
-    client_secret: '628a2462-c4b0-490f-9d97-e11b7711dae4',
+    client_secret: '-',
     api_scope: 'contacts'
   });
 
